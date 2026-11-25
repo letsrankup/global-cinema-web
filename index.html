@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Cinema — Watch Free Movies Online</title>
+<meta name="description" content="Watch free classic and open movies online — no signup. Public domain classics and Creative Commons films, streaming free forever.">
+<style>
+  :root{--bg:#0a0a0f;--card:#16161f;--red:#e50914;--gold:#f5c518;--text:#f2f2f2;--muted:#9a9aad}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+  header{position:sticky;top:0;z-index:20;background:rgba(10,10,15,.92);backdrop-filter:blur(8px);display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #22222e}
+  .logo{font-size:24px;font-weight:900;letter-spacing:1px}
+  .logo b{color:var(--red)}
+  .free{margin-left:auto;background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;letter-spacing:.5px}
+  .hero{position:relative;min-height:46vh;display:flex;align-items:flex-end;padding:28px 20px;background:#000 center/cover no-repeat}
+  .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(10,10,15,.95))}
+  .hero-in{position:relative;max-width:720px}
+  .tag{display:inline-block;background:var(--red);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:4px;letter-spacing:1px;margin-bottom:10px}
+  .hero h1{font-size:clamp(30px,6vw,54px);font-weight:900;line-height:1.05;text-transform:uppercase}
+  .meta{color:var(--gold);font-weight:700;margin:10px 0 6px;font-size:14px}
+  .desc{color:#d7d7e0;font-size:15px;line-height:1.55;max-width:600px}
+  .playbtn{margin-top:16px;background:#fff;color:#000;border:0;font-size:16px;font-weight:800;padding:12px 26px;border-radius:8px;cursor:pointer}
+  .playbtn:hover{background:var(--red);color:#fff}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;padding:18px 20px 4px}
+  .chip{background:var(--card);color:var(--text);border:1px solid #2a2a38;padding:8px 16px;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600}
+  .chip.on{background:var(--red);border-color:var(--red)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;padding:18px 20px 40px}
+  .card{background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s}
+  .card:hover{transform:translateY(-4px)}
+  .card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#222}
+  .card .in{padding:10px 12px}
+  .card h3{font-size:15px;line-height:1.3}
+  .card .m{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .card .lic{color:var(--gold);font-size:11px;font-weight:700;margin-top:4px}
+  #player{display:none;padding:18px 20px 40px;max-width:980px;margin:0 auto}
+  #player video{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9}
+  #player h2{margin:16px 0 6px;font-size:26px}
+  .back{background:var(--card);color:var(--text);border:1px solid #2a2a38;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:700;margin-bottom:14px}
+  footer{padding:22px 20px;color:var(--muted);font-size:13px;border-top:1px solid #22222e;line-height:1.6}
+  footer b{color:var(--text)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><b>GLOBAL</b> CINEMA</div>
+  <div class="free">100% FREE • NO SIGNUP</div>
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-in">
+    <span class="tag">FEATURED</span>
+    <h1 id="heroTitle"></h1>
+    <div class="meta" id="heroMeta"></div>
+    <p class="desc" id="heroDesc"></p>
+    <button class="playbtn" id="heroPlay">▶ Watch Now</button>
+  </div>
+</section>
+
+<nav class="chips" id="chips"></nav>
+<main class="grid" id="grid"></main>
+
+<section id="player">
+  <button class="back" id="backBtn">← Back to movies</button>
+  <video id="vid" controls playsinline></video>
+  <h2 id="pTitle"></h2>
+  <div class="meta" id="pMeta"></div>
+  <p class="desc" id="pDesc"></p>
+</section>
+
+<footer>
+  <b>Global Cinema</b> — every film here is free and legal to watch: Creative Commons open movies by the
+  Blender Foundation and public-domain classics from the Internet Archive. No account, no fees, no signup — just press play.
+</footer>
+
+<script>
+const MOVIES = [
+ {t:"Tears of Steel",y:2012,g:"Sci-Fi",d:12,r:"PG-13",lic:"CC BY 3.0",img:"https://archive.org/services/img/tearsofsteelblendervfxopenmovie800p",src:"https://archive.org/download/tearsofsteelblendervfxopenmovie800p/Tears%20of%20Steel%20-%20Blender%20VFX%20Open%20Movie%20800p.mp4",desc:"In a dystopian future Amsterdam, warriors and scientists restage a crucial event from the past in a desperate attempt to save the world from destructive robots.",feat:1},
+ {t:"Sintel",y:2010,g:"Action & Fantasy",d:15,r:"PG",lic:"CC BY 3.0",img:"https://archive.org/services/img/sintel_cc_by_2010",src:"https://archive.org/download/sintel_cc_by_2010/sintel-2048-stereo.mp4",desc:"A lonely young woman befriends a baby dragon named Scales. When he is taken from her, she crosses snowy peaks on a dangerous quest to find him."},
+ {t:"Big Buck Bunny",y:2008,g:"Animation",d:10,r:"G",lic:"CC BY 3.0",img:"https://archive.org/services/img/big-buck-bunny-720p-h264_202403",src:"https://archive.org/download/big-buck-bunny-720p-h264_202403/big%20buck%20bunny%20720p%20h264.mp4",desc:"A gentle giant rabbit's peaceful morning is ruined by three mischievous rodents — leading to an inventive slapstick showdown in a sunlit forest."},
+ {t:"Elephants Dream",y:2006,g:"Sci-Fi",d:11,r:"PG",lic:"CC BY 2.5",img:"https://archive.org/services/img/ElephantsDream",src:"https://archive.org/download/ElephantsDream/ed_1024.mp4",desc:"Two travelers, Proog and Emo, explore an infinite, surreal machine that responds to human imagination — the first film ever made with open-source graphics software."},
+ {t:"Night of the Living Dead",y:1968,g:"Horror",d:96,r:"R",lic:"Public Domain",img:"https://archive.org/services/img/night-of-the-living-dead-1968-720p",src:"https://archive.org/download/night-of-the-living-dead-1968-720p/Night%20of%20the%20Living%20Dead%20(1968)%20720p.mp4",desc:"George A. Romero's landmark horror classic: strangers barricade themselves inside a remote farmhouse as the dead rise and hunger for the living.",feat:1},
+ {t:"Charade",y:1963,g:"Neo-Noir & Drama",d:113,r:"PG",lic:"Public Domain",img:"https://archive.org/services/img/turner_video_340",src:"https://archive.org/download/turner_video_340/340.mp4",desc:"In Paris, a young widow is pursued by three men hunting her murdered husband's stolen fortune, and turns to a charming stranger for help. Cary Grant and Audrey Hepburn."},
+ {t:"Carnival of Souls",y:1962,g:"Horror",d:75,r:"PG-13",lic:"Public Domain",img:"https://archive.org/services/img/carnival-of-souls-1964",src:"https://archive.org/download/carnival-of-souls-1964/Carnival%20of%20Souls%20%20(1964).mp4",desc:"After surviving a car crash, a church organist is drawn to a mysterious abandoned carnival and haunted by a ghoulish figure — an atmospheric cult classic."},
+ {t:"The Little Shop of Horrors",y:1960,g:"Horror",d:70,r:"PG",lic:"Public Domain",img:"https://archive.org/services/img/TheLittleShopOfHorrors1960",src:"https://archive.org/download/TheLittleShopOfHorrors1960/The-Little-Shop-of-Horrors_512kb.mp4",desc:"Roger Corman's beloved cult comedy-horror: a hapless flower-shop clerk discovers his new plant thrives on a very unusual diet. Featuring a young Jack Nicholson."},
+ {t:"Plan 9 from Outer Space",y:1959,g:"Sci-Fi",d:79,r:"PG",lic:"Public Domain",img:"https://archive.org/services/img/plan-9-from-outer-space-1959-640-x-480.webm.-480p.vp-9",src:"https://archive.org/download/plan-9-from-outer-space-1959-640-x-480.webm.-480p.vp-9/Plan_9_from_Outer_Space_1959_640_x_480.webm.480p.vp9.mp4",desc:"Ed Wood's legendary cult classic: aliens resurrect the dead to stop humanity from destroying the universe — the greatest 'so bad it's good' film ever made."},
+ {t:"His Girl Friday",y:1940,g:"Comedy",d:92,r:"PG",lic:"Public Domain",img:"https://archive.org/services/img/his_girl_friday",src:"https://archive.org/download/his_girl_friday/his_girl_friday_512kb.mp4",desc:"Howard Hawks' rapid-fire screwball comedy: an editor tries every trick to win back his ex-wife — and star reporter — before she remarries. Cary Grant and Rosalind Russell."}
+];
+const grid=document.getElementById('grid'),chips=document.getElementById('chips');
+const cats=["All",...new Set(MOVIES.map(m=>m.g))];
+let cur="All";
+function renderChips(){chips.innerHTML=cats.map(c=>`<button class="chip ${c===cur?'on':''}" data-c="${c}">${c}</button>`).join('');
+ chips.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cur=b.dataset.c;renderChips();renderGrid();});}
+function renderGrid(){grid.innerHTML=MOVIES.filter(m=>cur==="All"||m.g===cur).map((m,i)=>`
+ <div class="card" data-i="${MOVIES.indexOf(m)}"><img loading="lazy" src="${m.img}" alt="${m.t} poster">
+ <div class="in"><h3>${m.t}</h3><div class="m">${m.y} • ${m.d}m • ${m.r}</div><div class="lic">${m.lic}</div></div></div>`).join('');
+ grid.querySelectorAll('.card').forEach(c=>c.onclick=()=>play(MOVIES[+c.dataset.i]));}
+const hero=MOVIES.find(m=>m.feat)||MOVIES[0];
+document.getElementById('hero').style.backgroundImage=`url('${hero.img}')`;
+document.getElementById('heroTitle').textContent=hero.t;
+document.getElementById('heroMeta').textContent=`${hero.y} • ${hero.g} • ${hero.d}m • ${hero.r} • ${hero.lic}`;
+document.getElementById('heroDesc').textContent=hero.desc;
+document.getElementById('heroPlay').onclick=()=>play(hero);
+const player=document.getElementById('player'),vid=document.getElementById('vid');
+function play(m){document.getElementById('hero').style.display='none';chips.style.display='none';grid.style.display='none';
+ player.style.display='block';document.getElementById('pTitle').textContent=m.t;
+ document.getElementById('pMeta').textContent=`${m.y} • ${m.g} • ${m.d} mins • ${m.r} • ${m.lic}`;
+ document.getElementById('pDesc').textContent=m.desc;vid.src=m.src;vid.play().catch(()=>{});
+ window.scrollTo({top:0,behavior:'smooth'});}
+document.getElementById('backBtn').onclick=()=>{vid.pause();vid.removeAttribute('src');vid.load();
+ player.style.display='none';document.getElementById('hero').style.display='flex';chips.style.display='flex';grid.style.display='grid';};
+renderChips();renderGrid();
+</script>
+</body>
+</html>
